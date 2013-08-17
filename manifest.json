@@ -1,0 +1,13 @@
+{
+  "manifest_version":   2,
+  "name":               "UW Class Schedule Exporter",
+  "version":            "1.0.1",
+  "description":        "Export your University of Waterloo class schedule to your calendar",
+  "content_scripts":    [
+    {
+      "matches":          ["https://quest.pecs.uwaterloo.ca/*"],
+      "all_frames":       true,
+      "js":               ["jquery-1.9.1.min.js", "content_script.js"]
+    }
+  ]
+}
