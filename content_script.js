@@ -5,8 +5,7 @@
   * Get ICS files for university class schedules in Oracle PeopleSoft systems (including UW Quest)
   * 
   * TODO list:
-  * - Properly handle date numbers (e.g. 20130901 - 1 day is NOT 20130900)
-  * - Handle classes that cross 00:00 UTC (alter date)
+  * - Properly handle date numbers (e.g. 20130901 - 1 != 20130900, 20130131 + 1 != 20130132)
 **/
 
 $(function() {
@@ -36,6 +35,13 @@ $(function() {
 
   // 19920517, 203000 -> 19920517T203000Z
   function formatDateTime(date, time) {
+    time = parseInt(time);
+    if (time >= 240000) {
+      date = parseInt(date) + 1;
+      time -= 240000;
+
+      if (time < 100000) time = "0" + time;
+    }
     return date + 'T' + time + 'Z'
   }
 
