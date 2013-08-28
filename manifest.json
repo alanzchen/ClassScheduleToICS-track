@@ -3,6 +3,7 @@
   "name":               "UW Class Schedule Exporter",
   "version":            "1.0.2",
   "description":        "Export your University of Waterloo class schedule to your calendar",
+  "icons": { "128": "icon.png" },
   "content_scripts":    [
     {
       "matches":          ["https://quest.pecs.uwaterloo.ca/*"],
