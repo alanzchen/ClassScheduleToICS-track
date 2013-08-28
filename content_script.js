@@ -87,36 +87,39 @@ $(function() {
         date_before     = start_date - 1;
 
         start_end_times = days_times.match(/\d\d?:\d\d[AP]M/g);
-        start_time      = getTimeString(start_end_times[0]);
-        end_time        = getTimeString(start_end_times[1]);
 
-        days_of_week    = getDaysOfWeek(days_times.match(/[A-Za-z]* /)[0])
+        if (start_end_times) {
+          start_time      = getTimeString(start_end_times[0]);
+          end_time        = getTimeString(start_end_times[1]);
 
-        ics_content = "BEGIN:VEVENT\n"
-                    + "DTSTART:"  + formatDateTime(date_before, start_time) + "\n"
-                    + "DTEND:"    + formatDateTime(date_before, end_time) +"\n"
-                    + "LOCATION:" + room + "\n"
-                    + "RRULE:FREQ=WEEKLY;UNTIL=" + formatDateTime(end_date, end_time) + ";BYDAY=" + days_of_week + "\n"
-                    + "EXDATE:"   + formatDateTime(date_before, start_time) + "\n"
-                    + "SUMMARY:"  + "(" + component + ") " + event_name + "\n"
-                    + "DESCRIPTION:"
-                      + 'Section: '         + section + '\\n'
-                      + 'Instructor: '      + instructor + '\\n'
-                      + 'Component: '       + component + '\\n'
-                      + 'Class Number: '    + class_number + '\\n'
-                      + 'Days/Times: '      + days_times + '\\n'
-                      + 'Start/End Date: '  + start_end_date + '\\n'
-                      + 'Location: '        + room + '\\n\n'
-                    + "END:VEVENT\n";
+          days_of_week    = getDaysOfWeek(days_times.match(/[A-Za-z]* /)[0])
 
-        ics_content_array.push(ics_content);
+          ics_content = "BEGIN:VEVENT\n"
+                      + "DTSTART:"  + formatDateTime(date_before, start_time) + "\n"
+                      + "DTEND:"    + formatDateTime(date_before, end_time) +"\n"
+                      + "LOCATION:" + room + "\n"
+                      + "RRULE:FREQ=WEEKLY;UNTIL=" + formatDateTime(end_date, end_time) + ";BYDAY=" + days_of_week + "\n"
+                      + "EXDATE:"   + formatDateTime(date_before, start_time) + "\n"
+                      + "SUMMARY:"  + "(" + component + ") " + event_name + "\n"
+                      + "DESCRIPTION:"
+                        + 'Section: '         + section + '\\n'
+                        + 'Instructor: '      + instructor + '\\n'
+                        + 'Component: '       + component + '\\n'
+                        + 'Class Number: '    + class_number + '\\n'
+                        + 'Days/Times: '      + days_times + '\\n'
+                        + 'Start/End Date: '  + start_end_date + '\\n'
+                        + 'Location: '        + room + '\\n\n'
+                      + "END:VEVENT\n";
 
-        $(this).find('span[id*="MTG_DATES"]').append(
-          '<a href="#" onclick="window.open( \'data:text/calendar;charset=utf8,'
-            + escape( ics_content_wrap(ics_content) )
-            + '\' );"><div>ICS file</div></a>'
-        );
-      } // end if
+          ics_content_array.push(ics_content);
+
+          $(this).find('span[id*="MTG_DATES"]').append(
+            '<a href="#" onclick="window.open( \'data:text/calendar;charset=utf8,'
+              + escape( ics_content_wrap(ics_content) )
+              + '\' );"><div>ICS file</div></a>'
+          );
+        } // end if (start_end_times)
+      } // end if (class_number)
     }); // end component_trs.each
   }); // end $(".PSGROUPBOXWBO").each
 
