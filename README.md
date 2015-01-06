@@ -7,4 +7,4 @@ Theoretically, it should work on any system powered by the same software (Oracle
 ## Download
 Click on the following image to install the UW Class Schedule Exporter.
 
-[![Available in the Chrome Web Store](https://lh3.googleusercontent.com/z4RmzyKHTmbt8dF4L-FHlnBFshskMA_F4Gm9Dfc0aQSeYZPS8jDmtoXB9rP5on5xFWVuFNqq9A=s26-h26-e365-rw)](https://chrome.google.com/webstore/detail/uw-class-schedule-exporte/fdblgakcbbgcghehdiainelnhojenfpe)
+[![Available in the Chrome Web Store](https://developer.chrome.com/webstore/images/ChromeWebStore_Badge_v2_496x150.png)](https://chrome.google.com/webstore/detail/uw-class-schedule-exporte/fdblgakcbbgcghehdiainelnhojenfpe)
