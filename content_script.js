@@ -1,32 +1,33 @@
-/** 
+/**
   * Class Schedule to ICS
-  * (c) 2013 Keanu Lee
+  * (c) 2013-2015 Keanu Lee
+  * (c) 2015 Baraa Hamodi
   *
   * Get ICS files for university class schedules in Oracle PeopleSoft systems (including UW Quest)
-  * 
+  *
   * TODO list:
   * - Properly handle date numbers (e.g. 20130901 - 1 != 20130900, 20130131 + 1 != 20130132)
 **/
 
 $(function() {
-
   // Ontario is UTC-4
+  // TODO: Create a getUTCOffset function that handles day light savings.
   utc_offset  = -4;
 
 
   // 05/17/1992 -> 19920517
   function getDateString(date) {
-    return date.substr(6,4)
-      + date.substr(0,2)
-      + date.substr(3,2);
+    return date.substr(6,4) +
+            date.substr(0,2) +
+            date.substr(3,2);
   }
 
   // 4:30PM -> 203000
   function getTimeString(time) {
-    time_string = (parseInt(time.replace(/[:APM]/g,""))
-        + (time.match(/P/) ? 1200 : 0)
-        - (time.match(/12:\d\dPM/) ? 1200 : 0)
-        - (utc_offset * 100)) * 100;
+    time_string = (parseInt(time.replace(/[:APM]/g, "")) +
+                  (time.match(/P/) ? 1200 : 0) -
+                  (time.match(/12:\d\dPM/) ? 1200 : 0) -
+                  (utc_offset * 100)) * 100;
 
     if (time_string < 100000) time_string = "0" + time_string;
 
@@ -42,6 +43,7 @@ $(function() {
 
       if (time < 100000) time = "0" + time;
     }
+
     return date + 'T' + time + 'Z'
   }
 
@@ -61,21 +63,21 @@ $(function() {
 
   // VEVENT -> BEGIN:VCALENDAR...VEVENT...END:VCALENDAR
   function ics_content_wrap(ics_content) {
-    return "BEGIN:VCALENDAR\n"
-                    + "VERSION:2.0\n"
-                    + "PRODID:-//Keanu Lee/Class Schedule to ICS//EN\n"
-                    + ics_content
-                    + "END:VCALENDAR\n";
+    return "BEGIN:VCALENDAR\n" +
+            "VERSION:2.0\n" +
+            "PRODID:-//Keanu Lee/Class Schedule to ICS//EN\n" +
+            ics_content +
+            "END:VCALENDAR\n";
   }
 
   ics_content_array = []
 
   $(".PSGROUPBOXWBO").each(function() {
-    event_name    = $(this).find(".PAGROUPDIVIDER").text();
+    event_name = $(this).find(".PAGROUPDIVIDER").text();
     component_trs = $(this).find(".PSLEVEL3GRIDNBO").find("tr");
 
     component_trs.each(function() {
-      class_number    = $(this).find('span[id*="DERIVED_CLS_DTL_CLASS_NBR"]').text();
+      class_number = $(this).find('span[id*="DERIVED_CLS_DTL_CLASS_NBR"]').text();
 
       if (class_number) {
         section         = $(this).find('a[id*="MTG_SECTION"]').text();
@@ -95,34 +97,34 @@ $(function() {
         start_end_times = days_times.match(/\d\d?:\d\d[AP]M/g);
 
         if (start_end_times) {
-          start_time      = getTimeString(start_end_times[0]);
-          end_time        = getTimeString(start_end_times[1]);
+          start_time    = getTimeString(start_end_times[0]);
+          end_time      = getTimeString(start_end_times[1]);
 
-          days_of_week    = getDaysOfWeek(days_times.match(/[A-Za-z]* /)[0])
+          days_of_week  = getDaysOfWeek(days_times.match(/[A-Za-z]* /)[0])
 
-          ics_content = "BEGIN:VEVENT\n"
-                      + "DTSTART:"  + formatDateTime(date_before, start_time) + "\n"
-                      + "DTEND:"    + formatDateTime(date_before, end_time) +"\n"
-                      + "LOCATION:" + room + "\n"
-                      + "RRULE:FREQ=WEEKLY;UNTIL=" + formatDateTime(end_date, end_time) + ";BYDAY=" + days_of_week + "\n"
-                      + "EXDATE:"   + formatDateTime(date_before, start_time) + "\n"
-                      + "SUMMARY:"  + "(" + component + ") " + event_name + "\n"
-                      + "DESCRIPTION:"
-                        + 'Section: '         + section + '\\n'
-                        + 'Instructor: '      + instructor + '\\n'
-                        + 'Component: '       + component + '\\n'
-                        + 'Class Number: '    + class_number + '\\n'
-                        + 'Days/Times: '      + days_times + '\\n'
-                        + 'Start/End Date: '  + start_end_date + '\\n'
-                        + 'Location: '        + room + '\\n\n'
-                      + "END:VEVENT\n";
+          ics_content = "BEGIN:VEVENT\n" +
+                        "DTSTART:" + formatDateTime(date_before, start_time) + "\n" +
+                        "DTEND:" + formatDateTime(date_before, end_time) + "\n" +
+                        "LOCATION:" + room + "\n" +
+                        "RRULE:FREQ=WEEKLY;UNTIL=" + formatDateTime(end_date, end_time) + ";BYDAY=" + days_of_week + "\n" +
+                        "EXDATE:"   + formatDateTime(date_before, start_time) + "\n" +
+                        "SUMMARY:"  + "(" + component + ") " + event_name + "\n" +
+                        "DESCRIPTION:" +
+                          'Section: '        + section + '\\n' +
+                          'Instructor: '     + instructor + '\\n' +
+                          'Component: '      + component + '\\n' +
+                          'Class Number: '   + class_number + '\\n' +
+                          'Days/Times: '     + days_times + '\\n' +
+                          'Start/End Date: ' + start_end_date + '\\n' +
+                          'Location: '       + room + '\\n\n' +
+                        "END:VEVENT\n";
 
           ics_content_array.push(ics_content);
 
           $(this).find('span[id*="MTG_DATES"]').append(
-            '<a href="#" onclick="window.open( \'data:text/calendar;charset=utf8,'
-              + escape( ics_content_wrap(ics_content) )
-              + '\' );"><div>ICS file</div></a>'
+            '<a href="#" onclick="window.open(\'data:text/calendar;charset=utf8,' +
+            escape(ics_content_wrap(ics_content)) +
+            '\');"><div>Download Schedule</div></a>'
           );
         } // end if (start_end_times)
       } // end if (class_number)
@@ -130,10 +132,10 @@ $(function() {
   }); // end $(".PSGROUPBOXWBO").each
 
   if (ics_content_array.length > 0) {
-    $('.PATRANSACTIONTITLE').append( 
-      ' (<a href="#" onclick="window.open( \'data:text/calendar;charset=utf8,'
-        + escape( ics_content_wrap( ics_content_array.join('') ) )
-        + '\' );">Download</a>)' 
+    $('.PATRANSACTIONTITLE').append(
+      ' (<a href="#" onclick="window.open(\'data:text/calendar;charset=utf8,' +
+      escape(ics_content_wrap(ics_content_array.join(''))) +
+      '\');">Download Full Schedule</a>)'
     );
   }
 })();
