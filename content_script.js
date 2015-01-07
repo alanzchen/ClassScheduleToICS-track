@@ -73,7 +73,9 @@ $(function() {
   ics_content_array = []
 
   $(".PSGROUPBOXWBO").each(function() {
-    event_name = $(this).find(".PAGROUPDIVIDER").text();
+    event_title = $(this).find(".PAGROUPDIVIDER").text().split('-');
+    course_code = event_title[0];
+    course_name = event_title[1];
     component_trs = $(this).find(".PSLEVEL3GRIDNBO").find("tr");
 
     component_trs.each(function() {
@@ -108,8 +110,9 @@ $(function() {
                         "LOCATION:" + room + "\n" +
                         "RRULE:FREQ=WEEKLY;UNTIL=" + formatDateTime(end_date, end_time) + ";BYDAY=" + days_of_week + "\n" +
                         "EXDATE:"   + formatDateTime(date_before, start_time) + "\n" +
-                        "SUMMARY:"  + "(" + component + ") " + event_name + "\n" +
+                        "SUMMARY:"  + course_code + component + ' in ' + room + "\n" +
                         "DESCRIPTION:" +
+                          'Course Name: '    + course_name + '\\n' +
                           'Section: '        + section + '\\n' +
                           'Instructor: '     + instructor + '\\n' +
                           'Component: '      + component + '\\n' +
@@ -119,6 +122,8 @@ $(function() {
                           'Location: '       + room + '\\n\n' +
                         "END:VEVENT\n";
 
+          // Remove double spaces from content.
+          ics_content = ics_content.replace(/\s{2,}/g, ' ');
           ics_content_array.push(ics_content);
 
           $(this).find('span[id*="MTG_DATES"]').append(
