@@ -1,7 +1,7 @@
 /**
-  * Class Schedule to ICS
-  * (c) 2013-2015 Keanu Lee
-  * (c) 2015 Baraa Hamodi
+  * Class Schedule to ICS File Exporter
+  * (c) 2015 Keanu Lee
+  * With contributions from: Baraa Hamodi
   *
   * Get ICS files for university class schedules in Oracle PeopleSoft systems (including UW Quest)
   *
@@ -18,8 +18,8 @@ $(function() {
   // 05/17/1992 -> 19920517
   function getDateString(date) {
     return date.substr(6,4) +
-            date.substr(0,2) +
-            date.substr(3,2);
+      date.substr(0,2) +
+      date.substr(3,2);
   }
 
   // 4:30PM -> 203000
@@ -64,10 +64,10 @@ $(function() {
   // VEVENT -> BEGIN:VCALENDAR...VEVENT...END:VCALENDAR
   function ics_content_wrap(ics_content) {
     return "BEGIN:VCALENDAR\n" +
-            "VERSION:2.0\n" +
-            "PRODID:-//Keanu Lee/Class Schedule to ICS//EN\n" +
-            ics_content +
-            "END:VCALENDAR\n";
+      "VERSION:2.0\n" +
+      "PRODID:-//Keanu Lee/Class Schedule to ICS//EN\n" +
+      ics_content +
+      "END:VCALENDAR\n";
   }
 
   ics_content_array = []
@@ -123,8 +123,8 @@ $(function() {
 
           $(this).find('span[id*="MTG_DATES"]').append(
             '<a href="#" onclick="window.open(\'data:text/calendar;charset=utf8,' +
-            escape(ics_content_wrap(ics_content)) +
-            '\');"><div>Download Schedule</div></a>'
+            encodeURIComponent(ics_content_wrap(ics_content)) +
+            '\');"><div>Download Class</div></a>'
           );
         } // end if (start_end_times)
       } // end if (class_number)
@@ -134,8 +134,8 @@ $(function() {
   if (ics_content_array.length > 0) {
     $('.PATRANSACTIONTITLE').append(
       ' (<a href="#" onclick="window.open(\'data:text/calendar;charset=utf8,' +
-      escape(ics_content_wrap(ics_content_array.join(''))) +
-      '\');">Download Full Schedule</a>)'
+      encodeURIComponent(ics_content_wrap(ics_content_array.join(''))) +
+      '\');">Download Schedule</a>)'
     );
   }
 })();
