@@ -10,11 +10,6 @@
 **/
 
 $(function() {
-  // Ontario is UTC-4
-  // TODO: Create a getUTCOffset function that handles day light savings.
-  utc_offset  = -4;
-
-
   // 05/17/1992 -> 19920517
   function getDateString(date) {
     return date.substr(6,4) +
@@ -24,27 +19,24 @@ $(function() {
 
   // 4:30PM -> 203000
   function getTimeString(time) {
-    time_string = (parseInt(time.replace(/[:APM]/g, "")) +
-                  (time.match(/P/) ? 1200 : 0) -
-                  (time.match(/12:\d\dPM/) ? 1200 : 0) -
-                  (utc_offset * 100)) * 100;
-
-    if (time_string < 100000) time_string = "0" + time_string;
-
-    return time_string;
+    time_string = time.substr(0, time.length - 2);
+    parts = time_string.split(':');
+    if (parts[0].length != 2) {
+      parts[0] = '0' + parts[0];
+    }
+    if (parts[1].length != 2) {
+      parts[1] = '0' + parts[1];
+    }
+    time_string = parts.join('') + '00';
+    if (time.match(/PM/) && parts[0] != 12) {
+      time_string = parseInt(time_string) + 120000;
+    }
+    return time_string.toString();
   }
 
-  // 19920517, 203000 -> 19920517T203000Z
+  // 19920517, 203000 -> 19920517T203000
   function formatDateTime(date, time) {
-    time = parseInt(time);
-    if (time >= 240000) {
-      date = parseInt(date) + 1;
-      time -= 240000;
-
-      if (time < 100000) time = "0" + time;
-    }
-
-    return date + 'T' + time + 'Z'
+    return date + 'T' + time;
   }
 
   // MTWThF -> MO,TU,WE,TH,FR
@@ -105,11 +97,11 @@ $(function() {
           days_of_week  = getDaysOfWeek(days_times.match(/[A-Za-z]* /)[0])
 
           ics_content = "BEGIN:VEVENT\n" +
-                        "DTSTART:" + formatDateTime(date_before, start_time) + "\n" +
-                        "DTEND:" + formatDateTime(date_before, end_time) + "\n" +
+                        "DTSTART;TZID=America/Toronto:" + formatDateTime(date_before, start_time) + "\n" +
+                        "DTEND;TZID=America/Toronto:" + formatDateTime(date_before, end_time) + "\n" +
                         "LOCATION:" + room + "\n" +
-                        "RRULE:FREQ=WEEKLY;UNTIL=" + formatDateTime(end_date, end_time) + ";BYDAY=" + days_of_week + "\n" +
-                        "EXDATE:"   + formatDateTime(date_before, start_time) + "\n" +
+                        "RRULE:FREQ=WEEKLY;UNTIL=" + formatDateTime(end_date, end_time) + "Z;BYDAY=" + days_of_week + "\n" +
+                        "EXDATE;TZID=America/Toronto:"   + formatDateTime(date_before, start_time) + "\n" +
                         "SUMMARY:"  + course_code + component + ' in ' + room + "\n" +
                         "DESCRIPTION:" +
                           'Course Name: '    + course_name + '\\n' +
