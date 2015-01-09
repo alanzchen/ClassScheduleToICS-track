@@ -8,7 +8,7 @@
 
 $(function() {
   // Timezone for tool.
-  var time_zone = 'America/Toronto';
+  var timezone = 'America/Toronto';
 
   // Date object -> '19920517'
   function getDateString(date) {
@@ -23,16 +23,16 @@ $(function() {
 
   // '4:30PM' -> '163000'
   function getTimeString(time) {
-    var time_string = time.substr(0, time.length - 2);
-    var parts = time_string.split(':');
+    var timeString = time.substr(0, time.length - 2);
+    var parts = timeString.split(':');
     if (parts[0].length != 2) {
       parts[0] = '0' + parts[0];
     }
-    time_string = parts.join('') + '00';
+    timeString = parts.join('') + '00';
     if (time.match(/PM/) && parts[0] != 12) {
-      time_string = (parseInt(time_string, 10) + 120000).toString();
+      timeString = (parseInt(timeString, 10) + 120000).toString();
     }
-    return time_string;
+    return timeString;
   }
 
   // Date object, '4:30PM' -> '19920517T163000'
@@ -55,90 +55,92 @@ $(function() {
   }
 
   // VEVENT -> BEGIN:VCALENDAR...VEVENT...END:VCALENDAR
-  function ics_content_wrap(ics_content) {
+  function wrapICalContent(iCalContent) {
     return 'BEGIN:VCALENDAR\n' +
       'VERSION:2.0\n' +
       'PRODID:-//Keanu Lee/Class Schedule to ICS//EN\n' +
-      ics_content +
+      iCalContent +
       'END:VCALENDAR\n';
   }
 
-  ics_content_array = []
+  var iCalContentArray = [];
 
   $('.PSGROUPBOXWBO').each(function() {
-    var event_title = $(this).find('.PAGROUPDIVIDER').text().split('-');
-    var course_code = event_title[0];
-    var course_name = event_title[1];
-    var component_trs = $(this).find('.PSLEVEL3GRIDNBO').find('tr');
+    var eventTitle = $(this).find('.PAGROUPDIVIDER').text().split('-');
+    var courseCode = eventTitle[0];
+    var courseName = eventTitle[1];
+    var componentRows = $(this).find('.PSLEVEL3GRIDNBO').find('tr');
 
-    component_trs.each(function() {
-      var class_number = $(this).find('span[id*="DERIVED_CLS_DTL_CLASS_NBR"]').text();
+    componentRows.each(function() {
+      var classNumber = $(this).find('span[id*="DERIVED_CLS_DTL_CLASS_NBR"]').text();
 
-      if (class_number) {
-        var days_times      = $(this).find('span[id*="MTG_SCHED"]').text();
-        var start_end_times = days_times.match(/\d\d?:\d\d[AP]M/g);
+      if (classNumber) {
+        var daysTimes     = $(this).find('span[id*="MTG_SCHED"]').text();
+        var startEndTimes = daysTimes.match(/\d\d?:\d\d[AP]M/g);
 
-        if (start_end_times) {
-          var days_of_week  = getDaysOfWeek(days_times.match(/[A-Za-z]* /)[0]);
-          var start_time    = start_end_times[0];
-          var end_time      = start_end_times[1];
+        if (startEndTimes) {
+          var daysOfWeek  = getDaysOfWeek(daysTimes.match(/[A-Za-z]* /)[0]);
+          var startTime   = startEndTimes[0];
+          var endTime     = startEndTimes[1];
 
-          var section         = $(this).find('a[id*="MTG_SECTION"]').text();
-          var component       = $(this).find('span[id*="MTG_COMP"]').text();
-          var room            = $(this).find('span[id*="MTG_LOC"]').text();
-          var instructor      = $(this).find('span[id*="DERIVED_CLS_DTL_SSR_INSTR_LONG"]').text();
-          var start_end_date  = $(this).find('span[id*="MTG_DATES"]').text();
+          var section       = $(this).find('a[id*="MTG_SECTION"]').text();
+          var component     = $(this).find('span[id*="MTG_COMP"]').text();
+          var room          = $(this).find('span[id*="MTG_LOC"]').text();
+          var instructor    = $(this).find('span[id*="DERIVED_CLS_DTL_SSR_INSTR_LONG"]').text();
+          var startEndDate  = $(this).find('span[id*="MTG_DATES"]').text();
 
           // Start the event one day before the actual start date, then exclude it in an exception
-          // date rule. This ensures an event does not occur on start_date if start_date is not on
-          // part of days_of_week.
-          var start_date = new Date(start_end_date.substring(0, 10));
-          start_date.setDate(start_date.getDate() - 1);
+          // date rule. This ensures an event does not occur on startDate if startDate is not on
+          // part of daysOfWeek.
+          var startDate = new Date(startEndDate.substring(0, 10));
+          startDate.setDate(startDate.getDate() - 1);
 
           // End the event one day after the actual end date. Technically, the RRULE UNTIL field
           // should be the start time of the last occurence of an event. However, since the field
           // does not accept a timezone (only UTC time) and Toronto is always behind UTC, we can
           // just set the end date one day after and be guarenteed that no other occurence of
           // this event.
-          var end_date = new Date(start_end_date.substring(13, 23));
-          end_date.setDate(end_date.getDate() + 1);
+          var endDate = new Date(startEndDate.substring(13, 23));
+          endDate.setDate(endDate.getDate() + 1);
 
-          var ics_content = 'BEGIN:VEVENT\n' +
-                            'DTSTART;TZID=' + time_zone + ':' + getDateTimeString(start_date, start_time) + '\n' +
-                            'DTEND;TZID=' + time_zone + ':' + getDateTimeString(start_date, end_time) + '\n' +
-                            'LOCATION:' + room + '\n' +
-                            'RRULE:FREQ=WEEKLY;UNTIL=' + getDateTimeString(end_date, end_time) + 'Z;BYDAY=' + days_of_week + '\n' +
-                            'EXDATE;TZID=' + time_zone + ':' + getDateTimeString(start_date, start_time) + '\n' +
-                            'SUMMARY:'  + course_code + '(' + component + ')\n' +
-                            'DESCRIPTION:' +
-                              'Course Name: '    + course_name + '\\n' +
-                              'Section: '        + section + '\\n' +
-                              'Instructor: '     + instructor + '\\n' +
-                              'Component: '      + component + '\\n' +
-                              'Class Number: '   + class_number + '\\n' +
-                              'Days/Times: '     + days_times + '\\n' +
-                              'Start/End Date: ' + start_end_date + '\\n' +
-                              'Location: '       + room + '\\n\n' +
-                            'END:VEVENT\n';
+          var iCalContent =
+            'BEGIN:VEVENT\n' +
+            'DTSTART;TZID=' + timezone + ':' + getDateTimeString(startDate, startTime) + '\n' +
+            'DTEND;TZID=' + timezone + ':' + getDateTimeString(startDate, endTime) + '\n' +
+            'LOCATION:' + room + '\n' +
+            'RRULE:FREQ=WEEKLY;UNTIL=' + getDateTimeString(endDate, endTime) + 'Z;BYDAY=' + daysOfWeek + '\n' +
+            'EXDATE;TZID=' + timezone + ':' + getDateTimeString(startDate, startTime) + '\n' +
+            'SUMMARY:'  + courseCode + '(' + component + ')\n' +
+            'DESCRIPTION:' +
+              'Course Name: '    + courseName + '\\n' +
+              'Section: '        + section + '\\n' +
+              'Instructor: '     + instructor + '\\n' +
+              'Component: '      + component + '\\n' +
+              'Class Number: '   + classNumber + '\\n' +
+              'Days/Times: '     + daysTimes + '\\n' +
+              'Start/End Date: ' + startEndDate + '\\n' +
+              'Location: '       + room + '\\n\n' +
+            'END:VEVENT\n';
 
           // Remove double spaces from content.
-          ics_content = ics_content.replace(/\s{2,}/g, ' ');
-          ics_content_array.push(ics_content);
+          iCalContent = iCalContent.replace(/\s{2,}/g, ' ');
+
+          iCalContentArray.push(iCalContent);
 
           $(this).find('span[id*="MTG_DATES"]').append(
             '<a href="#" onclick="window.open(\'data:text/calendar;charset=utf8,' +
-            encodeURIComponent(ics_content_wrap(ics_content)) +
-            '\');"><div>Download Class</div></a>'
+            encodeURIComponent(wrapICalContent(iCalContent)) +
+            '\');">Download Class</a>'
           );
-        } // end if (start_end_times)
-      } // end if (class_number)
-    }); // end component_trs.each
+        } // end if (startEndTimes)
+      } // end if (classNumber)
+    }); // end componentRows.each
   }); // end $(".PSGROUPBOXWBO").each
 
-  if (ics_content_array.length > 0) {
+  if (iCalContentArray.length > 0) {
     $('.PATRANSACTIONTITLE').append(
       ' (<a href="#" onclick="window.open(\'data:text/calendar;charset=utf8,' +
-      encodeURIComponent(ics_content_wrap(ics_content_array.join(''))) +
+      encodeURIComponent(wrapICalContent(iCalContentArray.join(''))) +
       '\');">Download Schedule</a>)'
     );
   }
