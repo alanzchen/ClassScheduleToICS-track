@@ -128,7 +128,7 @@ $(function() {
           iCalContentArray.push(iCalContent);
 
           $(this).find('span[id*="MTG_DATES"]').append(
-            '<a href="#" onclick="window.open(\'data:text/calendar;charset=utf8,' +
+            '<br><a href="#" onclick="window.open(\'data:text/calendar;charset=utf8,' +
             encodeURIComponent(wrapICalContent(iCalContent)) +
             '\');">Download Class</a>'
           );
