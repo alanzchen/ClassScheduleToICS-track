@@ -4,23 +4,24 @@
   * With contributions from: Baraa Hamodi
   *
   * Get ICS files for university class schedules in Oracle PeopleSoft systems (including UW Quest)
-  *
-  * TODO list:
-  * - Properly handle date numbers (e.g. 20130901 - 1 != 20130900, 20130131 + 1 != 20130132)
 **/
 
 $(function() {
   // Timezone for tool.
   var time_zone = 'America/Toronto';
 
-  // 05/17/1992 -> 19920517
+  // Date object -> '19920517'
   function getDateString(date) {
-    return date.substr(6,4) +
-      date.substr(0,2) +
-      date.substr(3,2);
+    var m = date.getMonth() + 1;
+    if (m < 10) m = '0' + m;
+
+    var d = date.getDate();
+    if (d < 10) d = '0' + d;
+    
+    return '' + date.getFullYear() + m + d;
   }
 
-  // 4:30PM -> 163000
+  // '4:30PM' -> '163000'
   function getTimeString(time) {
     var time_string = time.substr(0, time.length - 2);
     var parts = time_string.split(':');
@@ -34,9 +35,9 @@ $(function() {
     return time_string;
   }
 
-  // 19920517, 163000 -> 19920517T163000
-  function formatDateTime(date, time) {
-    return date + 'T' + time;
+  // Date object, '4:30PM' -> '19920517T163000'
+  function getDateTimeString(date, time) {
+    return getDateString(date) + 'T' + getTimeString(time);
   }
 
   // MTWThF -> MO,TU,WE,TH,FR
@@ -74,35 +75,41 @@ $(function() {
       var class_number = $(this).find('span[id*="DERIVED_CLS_DTL_CLASS_NBR"]').text();
 
       if (class_number) {
-        var section         = $(this).find('a[id*="MTG_SECTION"]').text();
-        var component       = $(this).find('span[id*="MTG_COMP"]').text();
         var days_times      = $(this).find('span[id*="MTG_SCHED"]').text();
-        var room            = $(this).find('span[id*="MTG_LOC"]').text();
-        var instructor      = $(this).find('span[id*="DERIVED_CLS_DTL_SSR_INSTR_LONG"]').text();
-        var start_end_date  = $(this).find('span[id*="MTG_DATES"]').text();
-
-        var start_date      = getDateString(start_end_date);
-        var end_date        = getDateString(start_end_date.substr(13));
-
-        // Start the event on the day before start_date, then exclude it in an exception date rule
-        // This ensures an event does not occur on start_date if start_date is not on part of days_of_week
-        var date_before     = start_date - 1;
-
         var start_end_times = days_times.match(/\d\d?:\d\d[AP]M/g);
 
         if (start_end_times) {
-          var start_time    = getTimeString(start_end_times[0]);
-          var end_time      = getTimeString(start_end_times[1]);
+          var days_of_week  = getDaysOfWeek(days_times.match(/[A-Za-z]* /)[0]);
+          var start_time    = start_end_times[0];
+          var end_time      = start_end_times[1];
 
-          var days_of_week  = getDaysOfWeek(days_times.match(/[A-Za-z]* /)[0])
+          var section         = $(this).find('a[id*="MTG_SECTION"]').text();
+          var component       = $(this).find('span[id*="MTG_COMP"]').text();
+          var room            = $(this).find('span[id*="MTG_LOC"]').text();
+          var instructor      = $(this).find('span[id*="DERIVED_CLS_DTL_SSR_INSTR_LONG"]').text();
+          var start_end_date  = $(this).find('span[id*="MTG_DATES"]').text();
+
+          // Start the event one day before the actual start date, then exclude it in an exception
+          // date rule. This ensures an event does not occur on start_date if start_date is not on
+          // part of days_of_week.
+          var start_date = new Date(start_end_date.substring(0, 10));
+          start_date.setDate(start_date.getDate() - 1);
+
+          // End the event one day after the actual end date. Technically, the RRULE UNTIL field
+          // should be the start time of the last occurence of an event. However, since the field
+          // does not accept a timezone (only UTC time) and Toronto is always behind UTC, we can
+          // just set the end date one day after and be guarenteed that no other occurence of
+          // this event.
+          var end_date = new Date(start_end_date.substring(13, 23));
+          end_date.setDate(end_date.getDate() + 1);
 
           var ics_content = 'BEGIN:VEVENT\n' +
-                            'DTSTART;TZID=' + time_zone + ':' + formatDateTime(date_before, start_time) + '\n' +
-                            'DTEND;TZID=' + time_zone + ':' + formatDateTime(date_before, end_time) + '\n' +
+                            'DTSTART;TZID=' + time_zone + ':' + getDateTimeString(start_date, start_time) + '\n' +
+                            'DTEND;TZID=' + time_zone + ':' + getDateTimeString(start_date, end_time) + '\n' +
                             'LOCATION:' + room + '\n' +
-                            'RRULE:FREQ=WEEKLY;UNTIL=' + formatDateTime((parseInt(end_date) + 1).toString(), end_time) + 'Z;BYDAY=' + days_of_week + '\n' +
-                            'EXDATE;TZID=' + time_zone + ':' + formatDateTime(date_before, start_time) + '\n' +
-                            'SUMMARY:'  + course_code + component + ' in ' + room + '\n' +
+                            'RRULE:FREQ=WEEKLY;UNTIL=' + getDateTimeString(end_date, end_time) + 'Z;BYDAY=' + days_of_week + '\n' +
+                            'EXDATE;TZID=' + time_zone + ':' + getDateTimeString(start_date, start_time) + '\n' +
+                            'SUMMARY:'  + course_code + '(' + component + ')\n' +
                             'DESCRIPTION:' +
                               'Course Name: '    + course_name + '\\n' +
                               'Section: '        + section + '\\n' +
