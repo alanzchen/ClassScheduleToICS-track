@@ -100,7 +100,7 @@ $(function() {
                             'DTSTART;TZID=' + time_zone + ':' + formatDateTime(date_before, start_time) + '\n' +
                             'DTEND;TZID=' + time_zone + ':' + formatDateTime(date_before, end_time) + '\n' +
                             'LOCATION:' + room + '\n' +
-                            'RRULE:FREQ=WEEKLY;UNTIL=' + formatDateTime(end_date, end_time) + 'Z;BYDAY=' + days_of_week + '\n' +
+                            'RRULE:FREQ=WEEKLY;UNTIL=' + formatDateTime((parseInt(end_date) + 1).toString(), end_time) + 'Z;BYDAY=' + days_of_week + '\n' +
                             'EXDATE;TZID=' + time_zone + ':' + formatDateTime(date_before, start_time) + '\n' +
                             'SUMMARY:'  + course_code + component + ' in ' + room + '\n' +
                             'DESCRIPTION:' +
