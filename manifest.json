@@ -1,12 +1,12 @@
 {
   "manifest_version":   2,
-  "name":               "UW Class Schedule Exporter",
+  "name":               "CUHKSZ Class Schedule Exporter",
   "version":            "1.1",
-  "description":        "Export your University of Waterloo class schedule to your calendar",
+  "description":        "Export your CUHKSZ class schedule to your calendar",
   "icons": { "128": "icon.png" },
   "content_scripts":    [
     {
-      "matches":          ["https://quest.pecs.uwaterloo.ca/*"],
+      "matches":          ["http://116.31.95.3:6550/*"],
       "all_frames":       true,
       "js":               ["jquery-1.9.1.min.js", "content_script.js"]
     }
