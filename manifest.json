@@ -1,12 +1,13 @@
 {
   "manifest_version":   2,
-  "name":               "CUHKSZ Class Schedule Exporter",
+  "name":               "CUHK(SZ) & CUHK Class Schedule Exporter",
   "version":            "1.1",
-  "description":        "Export your CUHKSZ class schedule to your calendar",
+  "description":        "Export your CUHK(SZ) & CUHK class schedule to your calendar",
   "icons": { "128": "icon.png" },
+  "permissions":        ["http://qianjian.tk/*"],
   "content_scripts":    [
     {
-      "matches":          ["http://116.31.95.3/*", "http://116.31.95.2/*", "http://58.250.174.66/*"],
+      "matches":          ["http://116.31.95.3/*", "http://116.31.95.2/*", "http://58.250.174.66/*", "https://portal.cuhk.edu.hk/*"],
       "all_frames":       true,
       "js":               ["jquery-1.9.1.min.js", "content_script.js"]
     }
