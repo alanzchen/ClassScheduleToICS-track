@@ -6,6 +6,7 @@
   * Get ICS files for university class schedules in Oracle PeopleSoft systems (including CUHKSZ)
 **/
 var test;
+var previouscomponent;
 function listener() {
     console.debug("listener fired.");
     jQuery(function($) {
@@ -66,7 +67,6 @@ function listener() {
       }
 
       var iCalContentArray = [];
-
       $('.PSGROUPBOXWBO').each(function() {
         var eventTitle = $(this).find('.PAGROUPDIVIDER').text().split('-');
         var courseCode = eventTitle[0];
@@ -89,9 +89,18 @@ function listener() {
               var daysOfWeek  = getDaysOfWeek(daysTimes.match(/[A-Za-z]* /)[0]);
               var startTime   = startEndTimes[0];
               var endTime     = startEndTimes[1];
-
               var section       = $(this).find('a[id*="MTG_SECTION"]').text();
               var component     = $(this).find('span[id*="MTG_COMP"]').text();
+              console.debug('Is \'' + component +'\' empty?');
+              if (component == ' ' ) {
+                console.debug('Yes it is empty.')
+                component = previouscomponent;
+              }
+              else {
+                previouscomponent = component;
+                console.debug('Now previouscomponent set to ' + previouscomponent);
+              }
+              console.debug('Now component is ' + component + '.');
               var room          = $(this).find('span[id*="MTG_LOC"]').text();
               var instructor    = $(this).find('span[id*="DERIVED_CLS_DTL_SSR_INSTR_LONG"]').text();
               var startEndDate  = $(this).find('span[id*="MTG_DATES"]').text();
@@ -133,12 +142,13 @@ function listener() {
                   'Class Number: '   + classNumber + '\\n' +
                   'Days/Times: '     + daysTimes + '\\n' +
                   'Start/End Date: ' + startEndDate + '\\n' +
-                  'Location: '       + room + '\\n\n' +
+                  'Location: '       + room + '\\n\\n\\n---\\n' +
+                  'Note: '           + 'Proudly brought to you by Alan Chen. If you find any mistake, please report it immediately to admin@zenan.ch or on Github as such mistake will annoy other students.' + '\\n\n' +
                 'END:VEVENT\n';
-              console.debug(iCalContent);
+              //console.debug(iCalContent);
               // Remove double spaces from content.
               iCalContent = iCalContent.replace(/\s{2,}/g, ' ');
-              console.debug(iCalContent);
+              //console.debug(iCalContent);
               iCalContentArray.push(iCalContent);
 
               $(this).find('span[id*="MTG_DATES"]').append(
@@ -156,7 +166,7 @@ function listener() {
         $('.PATRANSACTIONTITLE').append(
           ' (<a href="#" onclick="window.open(\'data:text/calendar;charset=utf8,' +
           encodeURIComponent(wrapICalContent(iCalContentArray.join(''))) +
-          '\');">Download Schedule</a>) Proudly brought to you by Alan.'
+          '\');">Download Schedule</a>)'
         );
         }
         else {

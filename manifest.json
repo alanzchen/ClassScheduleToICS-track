@@ -6,7 +6,7 @@
   "icons": { "128": "icon.png" },
   "content_scripts":    [
     {
-      "matches":          ["http://116.31.95.3:6550/*"],
+      "matches":          ["http://116.31.95.3/*", "http://116.31.95.2/*", "http://58.250.174.66/*"],
       "all_frames":       true,
       "js":               ["jquery-1.9.1.min.js", "content_script.js"]
     }
