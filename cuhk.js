@@ -76,7 +76,7 @@ function listener() {
         return days.join(',')
       }
 
-      // VEVENT -> BEGIN:VCALENDAR...VEVENT...END:VCALENDAR
+      // VEVENT -> BEGIN:VCALaENDAR...VEVENT...END:VCALENDAR
       function wrapICalContent(iCalContent) {
         return 'BEGIN:VCALENDAR\n' +
           'VERSION:2.0\n' +
@@ -171,7 +171,7 @@ function listener() {
               //console.debug(iCalContent);
               iCalContentArray.push(iCalContent);
 
-              $(this).find('span[id*="MTG_DATES"]').append(
+              $(this).find('td:nth-child(7)>span').append(
                 '<br><a href="#" onclick="window.open(\'data:text/calendar;charset=utf8,' +
                 encodeURIComponent(wrapICalContent(iCalContent)) +
                 '\');">Download Class</a>'
@@ -207,6 +207,7 @@ launcher = function() {
   else {
     timeout = setTimeout(listener, 2000);
   }
+  // Launcher only fire once.
   document.removeEventListener("DOMSubtreeModified", launcher);
 }
 document.addEventListener("DOMSubtreeModified", launcher, false);
