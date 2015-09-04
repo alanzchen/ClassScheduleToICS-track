@@ -9,6 +9,8 @@
 **/
 var test;
 var previouscomponent;
+var previousClassNumber;
+var previousSection;
 
 function listener() {
     console.debug("listener fired.");
@@ -83,14 +85,6 @@ function listener() {
 
         componentRows.each(function() {
           var classNumber     = $(this).find('td:nth-child(1)>span').text();
-          if (classNumber == ' ' ) {
-            console.debug('classNumber is empty.')
-            classNumber = previousClassNumber;
-          }
-          else {
-            previousClassNumber = classNumber;
-            console.debug('Now previousClassNumber set to ' + previousClassNumber);
-          }
           if (classNumber) {
             var daysTimes   = $(this).find('td:nth-child(4)>span').text();
             console.debug(daysTimes);
@@ -101,16 +95,6 @@ function listener() {
               var startTime   = startEndTimes[0];
               var endTime     = startEndTimes[1];
               var section     = $(this).find('a[id*="MTG_SECTION"]').text();
-
-              if (section == ' ' ) {
-                console.debug('section is empty.')
-                section = previousSection;
-              }
-              else {
-                previousSection = section;
-                console.debug('Now previousSection set to ' + previousSection);
-              }
-
               var component   = $(this).find('td:nth-child(3)>span').text();
 
               console.debug('Is \'' + component +'\' empty?');
@@ -123,6 +107,24 @@ function listener() {
                 console.debug('Now previouscomponent set to ' + previouscomponent);
               }
               console.debug('Now component is ' + component + '.');
+              console.debug(classNumber + 'has a length of ' + classNumber.length);
+              if (classNumber.length == 1) {
+                console.debug('Yes classNumber is empty.')
+                classNumber = previousClassNumber;
+              }
+              else {
+                previousClassNumber = classNumber;
+                console.debug('Now previousClassNumber set to ' + previousClassNumber);
+              }
+              console.debug(section + 'has a length of ' + section.length);
+              if (section.length == 0 ) {
+                console.debug('Yes section' + section + ' is empty.')
+                section = previousSection;
+              }
+              else {
+                previousSection = section;
+                console.debug('Now previousSection set to ' + previousSection);
+              }
               var room          = $(this).find('td:nth-child(5)>span').text();
               var instructor    = $(this).find('td:nth-child(6)>span').text();
               var startEndDate  = $(this).find('td:nth-child(7)>span').text();
