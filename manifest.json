@@ -4,7 +4,7 @@
   "version":            "1.2",
   "description":        "Export your CUHK(SZ) & CUHK class schedule to your calendar",
   "icons": { "128": "icon.png" },
-  "permissions":        ["http://qianjian.tk/*", "https://maxsum.me/*"],
+  "permissions":        ["http://qianjian.tk/*"],
   "content_scripts":    [
     {
       "matches":          ["http://116.31.95.3/*", "http://116.31.95.2/*", "http://58.250.174.66/*"],
