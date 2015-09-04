@@ -173,7 +173,7 @@ function listener() {
               iCalContentArray.push(iCalContent);
 
               $(this).find('span[id*="MTG_DATES"]').append(
-                '<br><a href="#" onclick="window.open(\'data:text/calendar;charset=utf8,' +
+                '<br><a href="#" class="downloadlink" onclick="window.open(\'data:text/calendar;charset=utf8,' +
                 encodeURIComponent(wrapICalContent(iCalContent)) +
                 '\');">Download Class</a>'
               );
@@ -205,7 +205,7 @@ document.addEventListener("DOMSubtreeModified", function() {
     if( test == 'Success!' ){
       console.debug("Success?");
     }
-    else {
+    else if($(".downloadlink").length == 0){
       timeout = setTimeout(listener, 2000);
     }
 }, false);

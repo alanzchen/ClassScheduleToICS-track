@@ -179,7 +179,7 @@ function listener() {
               iCalContentArray.push(iCalContent);
 
               $(this).find('td:nth-child(7)>span').append(
-                '<br><a href="#" onclick="window.open(\'data:text/calendar;charset=utf8,' +
+                '<br><a href="#" class="downloadlink" onclick="window.open(\'data:text/calendar;charset=utf8,' +
                 encodeURIComponent(wrapICalContent(iCalContent)) +
                 '\');">Download Class</a>'
               );
@@ -204,17 +204,14 @@ function listener() {
 }
 
 var timeout = null;
-launcher = function() {
-  if(timeout) {
-      clearTimeout(timeout);
-  }
-  if( test == 'Success!' ){
-    console.debug("Success?");
-  }
-  else {
-    timeout = setTimeout(listener, 2000);
-  }
-  // Launcher only fire once.
-  document.removeEventListener("DOMSubtreeModified", launcher);
-}
-document.addEventListener("DOMSubtreeModified", launcher, false);
+document.addEventListener("DOMSubtreeModified", function() {
+    if(timeout) {
+        clearTimeout(timeout);
+    }
+    if( test == 'Success!' ){
+      console.debug("Success?");
+    }
+    else if($(".downloadlink").length == 0){
+      timeout = setTimeout(listener, 2000);
+    }
+}, false);
