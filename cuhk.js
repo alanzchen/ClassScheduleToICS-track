@@ -188,7 +188,7 @@ function listener() {
 
       if (iCalContentArray.length > 0) {
         test = 'Success!';
-        
+
         chrome.runtime.sendMessage({
           from:    'content',
           subject: "showPageAction",
