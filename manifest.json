@@ -18,7 +18,7 @@
     }
   ],
   "background":{
-    "scripts":["bg.js"],
+    "scripts":["jquery-1.9.1.min.js", "bg.js"],
     "persistent": false
   },
   "page_action": {
