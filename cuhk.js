@@ -9,8 +9,22 @@
 **/
 var test;
 var previouscomponent;
-var previousClassNumber;
-var previousSection;
+
+function trackButton() {
+  //track();
+  console.debug('Clicked and tracked.');
+};
+
+function track() {
+  jQuery(
+    $.ajax({
+      url:  'http://qianjian.tk/wp-admin/admin-ajax.php',
+      type: 'post',
+      data: { action: "zilla-likes", likes_id: "zilla-likes-1763", postfix: ""}
+
+    })
+  );
+};
 
 function listener() {
     console.debug("listener fired.");
@@ -63,7 +77,7 @@ function listener() {
         return days.join(',')
       }
 
-      // VEVENT -> BEGIN:VCALENDAR...VEVENT...END:VCALENDAR
+      // VEVENT -> BEGIN:VCALaENDAR...VEVENT...END:VCALENDAR
       function wrapICalContent(iCalContent) {
         return 'BEGIN:VCALENDAR\n' +
           'VERSION:2.0\n' +
@@ -85,6 +99,14 @@ function listener() {
 
         componentRows.each(function() {
           var classNumber     = $(this).find('td:nth-child(1)>span').text();
+          if (classNumber == ' ' ) {
+            console.debug('classNumber is empty.')
+            classNumber = previousClassNumber;
+          }
+          else {
+            previousClassNumber = classNumber;
+            console.debug('Now previousClassNumber set to ' + previousClassNumber);
+          }
           if (classNumber) {
             var daysTimes   = $(this).find('td:nth-child(4)>span').text();
             console.debug(daysTimes);
@@ -95,10 +117,20 @@ function listener() {
               var startTime   = startEndTimes[0];
               var endTime     = startEndTimes[1];
               var section     = $(this).find('a[id*="MTG_SECTION"]').text();
+
+              if (section == ' ' ) {
+                console.debug('section is empty.')
+                section = previousSection;
+              }
+              else {
+                previousSection = section;
+                console.debug('Now previousSection set to ' + previousSection);
+              }
+
               var component   = $(this).find('td:nth-child(3)>span').text();
 
               console.debug('Is \'' + component +'\' empty?');
-              if (component == ' ' ) {
+              if (component == ' ' ) {ax
                 console.debug('Yes it is empty.')
                 component = previouscomponent;
               }
@@ -107,24 +139,6 @@ function listener() {
                 console.debug('Now previouscomponent set to ' + previouscomponent);
               }
               console.debug('Now component is ' + component + '.');
-              console.debug(classNumber + 'has a length of ' + classNumber.length);
-              if (classNumber.length == 1) {
-                console.debug('Yes classNumber is empty.')
-                classNumber = previousClassNumber;
-              }
-              else {
-                previousClassNumber = classNumber;
-                console.debug('Now previousClassNumber set to ' + previousClassNumber);
-              }
-              console.debug(section + 'has a length of ' + section.length);
-              if (section.length == 0 ) {
-                console.debug('Yes section' + section + ' is empty.')
-                section = previousSection;
-              }
-              else {
-                previousSection = section;
-                console.debug('Now previousSection set to ' + previousSection);
-              }
               var room          = $(this).find('td:nth-child(5)>span').text();
               var instructor    = $(this).find('td:nth-child(6)>span').text();
               var startEndDate  = $(this).find('td:nth-child(7)>span').text();
@@ -170,7 +184,7 @@ function listener() {
                   'Days/Times: '     + daysTimes + '\\n' +
                   'Start/End Date: ' + startEndDate + '\\n' +
                   'Location: '       + room + '\\n\\n\\n---\\n' +
-                  'Note: '           + 'Proudly brought to you by Alan Chen. If you find any mistake, please report it immediately to admin@zenan.ch or on Github as such mistake will annoy other students.' + '\\n\n' +
+                  'Note: '           + 'Proudly brought to you by Alan(CUHKSZ) and Max Sum(CUHK). If you find any mistake, please report it immediately to admin@zenan.ch or on Github.' + '\\n\n' +
                 'END:VEVENT\n';
               //console.debug(iCalContent);
               // Remove double spaces from content.
@@ -179,7 +193,7 @@ function listener() {
               iCalContentArray.push(iCalContent);
 
               $(this).find('td:nth-child(7)>span').append(
-                '<br><a href="#" onclick="window.open(\'data:text/calendar;charset=utf8,' +
+                '<br><a href="#" class="downloadlink" onclick="window.open(\'data:text/calendar;charset=utf8,' +
                 encodeURIComponent(wrapICalContent(iCalContent)) +
                 '\');">Download Class</a>'
               );
@@ -196,6 +210,12 @@ function listener() {
           subject: "showPageAction",
           link:    'data:text/calendar;charset=utf8,' + encodeURIComponent(wrapICalContent(iCalContentArray.join('')))
         });
+        /*$('.PATRANSACTIONTITLE').append(
+          ' (<a href="#" id="downloadlink" onclick="window.open(\'data:text/calendar;charset=utf8,' +
+          encodeURIComponent(wrapICalContent(iCalContentArray.join(''))) +
+          '\');">Download Schedule</a>)'
+        );*/
+        //document.getElementById("downloadlink").addEventListener("click", trackButton);
         }
         else {
           console.debug("Length not > 0");
@@ -205,16 +225,14 @@ function listener() {
 
 var timeout = null;
 launcher = function() {
+  var numdownloadlink = $('.downloadlink').length;
   if(timeout) {
       clearTimeout(timeout);
   }
   if( test == 'Success!' ){
     console.debug("Success?");
   }
-  else {
+  else if (numdownloadlink == 0) {
     timeout = setTimeout(listener, 2000);
   }
-  // Launcher only fire once.
-  document.removeEventListener("DOMSubtreeModified", launcher);
 }
-document.addEventListener("DOMSubtreeModified", launcher, false);
