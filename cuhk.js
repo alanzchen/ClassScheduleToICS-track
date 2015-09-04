@@ -10,22 +10,6 @@
 var test;
 var previouscomponent;
 
-function trackButton() {
-  //track();
-  console.debug('Clicked and tracked.');
-};
-
-function track() {
-  jQuery(
-    $.ajax({
-      url:  'http://qianjian.tk/wp-admin/admin-ajax.php',
-      type: 'post',
-      data: { action: "zilla-likes", likes_id: "zilla-likes-1763", postfix: ""}
-
-    })
-  );
-};
-
 function listener() {
     console.debug("listener fired.");
     jQuery(function($) {
@@ -210,12 +194,6 @@ function listener() {
           subject: "showPageAction",
           link:    'data:text/calendar;charset=utf8,' + encodeURIComponent(wrapICalContent(iCalContentArray.join('')))
         });
-        /*$('.PATRANSACTIONTITLE').append(
-          ' (<a href="#" id="downloadlink" onclick="window.open(\'data:text/calendar;charset=utf8,' +
-          encodeURIComponent(wrapICalContent(iCalContentArray.join(''))) +
-          '\');">Download Schedule</a>)'
-        );*/
-        //document.getElementById("downloadlink").addEventListener("click", trackButton);
         }
         else {
           console.debug("Length not > 0");
