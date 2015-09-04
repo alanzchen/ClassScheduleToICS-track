@@ -186,11 +186,17 @@ function listener() {
 
       if (iCalContentArray.length > 0) {
         test = 'Success!';
-        $('.PATRANSACTIONTITLE').append(
+        
+        chrome.runtime.sendMessage({
+          from:    'content',
+          subject: "showPageAction",
+          link:    'data:text/calendar;charset=utf8,' + encodeURIComponent(wrapICalContent(iCalContentArray.join('')))
+        });
+        /*$('.PATRANSACTIONTITLE').append(
           ' (<a href="#" id="downloadlink" onclick="window.open(\'data:text/calendar;charset=utf8,' +
           encodeURIComponent(wrapICalContent(iCalContentArray.join(''))) +
           '\');">Download Schedule</a>)'
-        );
+        );*/
         //document.getElementById("downloadlink").addEventListener("click", trackButton);
         }
         else {
