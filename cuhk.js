@@ -77,7 +77,7 @@ function listener() {
         return days.join(',')
       }
 
-      // VEVENT -> BEGIN:VCALaENDAR...VEVENT...END:VCALENDAR
+      // VEVENT -> BEGIN:VCALENDAR...VEVENT...END:VCALENDAR
       function wrapICalContent(iCalContent) {
         return 'BEGIN:VCALENDAR\n' +
           'VERSION:2.0\n' +
