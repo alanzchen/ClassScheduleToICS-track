@@ -85,9 +85,6 @@ function listener() {
           'END:VCALENDAR\n';
       }
 
-      var isCUHK = window.location.href.indexOf('cusis.cuhk.edu.hk') ? true : false;
-      console.log("isCUHK: " + isCUHK);
-
       var iCalContentArray = [];
       $('.PSGROUPBOXWBO').each(function() {
         var eventTitle = $(this).find('.PAGROUPDIVIDER').text().split('-');
@@ -100,16 +97,10 @@ function listener() {
         console.debug(componentRows);
 
         componentRows.each(function() {
-          if (isCUHK)
-            var classNumber     = $(this).find('td:nth-child(1)>span').text();
-          else
-            var classNumber     = $(this).find('span[id*="DERIVED_CLS_DTL_CLASS_NBR"]').text();
+          var classNumber     = $(this).find('td:nth-child(1)>span').text();
           console.debug(classNumber);
           if (classNumber) {
-            if (isCUHK)
-              var daysTimes   = $(this).find('td:nth-child(4)>span').text();
-            else
-              var daysTimes   = $(this).find('span[id*="MTG_SCHED"]').text();
+            var daysTimes   = $(this).find('td:nth-child(4)>span').text();
             console.debug(daysTimes);
             var startEndTimes = daysTimes.match(/\d\d?:\d\d/g);
             console.debug('startEndTimes' + startEndTimes);
@@ -118,10 +109,7 @@ function listener() {
               var startTime   = startEndTimes[0];
               var endTime     = startEndTimes[1];
               var section     = $(this).find('a[id*="MTG_SECTION"]').text();
-              if (isCUHK)
-                var component = $(this).find('td:nth-child(3)>span').text();
-              else
-                var component = $(this).find('span[id*="MTG_COMP"]').text();
+              var component   = $(this).find('td:nth-child(3)>span').text();
 
               console.debug('Is \'' + component +'\' empty?');
               if (component == ' ' ) {
@@ -133,15 +121,9 @@ function listener() {
                 console.debug('Now previouscomponent set to ' + previouscomponent);
               }
               console.debug('Now component is ' + component + '.');
-              if (isCUHK){
-                var room          = $(this).find('td:nth-child(5)>span').text();
-                var instructor    = $(this).find('td:nth-child(6)>span').text();
-                var startEndDate  = $(this).find('td:nth-child(7)>span').text();
-              }else{
-                var room          = $(this).find('span[id*="MTG_LOC"]').text();
-                var instructor    = $(this).find('span[id*="DERIVED_CLS_DTL_SSR_INSTR_LONG"]').text();
-                var startEndDate  = $(this).find('span[id*="MTG_DATES"]').text();
-              }
+              var room          = $(this).find('td:nth-child(5)>span').text();
+              var instructor    = $(this).find('td:nth-child(6)>span').text();
+              var startEndDate  = $(this).find('td:nth-child(7)>span').text();
               console.debug('startEndDate' + startEndDate);
               // Start the event one day before the actual start date, then exclude it in an exception
               // date rule. This ensures an event does not occur on startDate if startDate is not on
