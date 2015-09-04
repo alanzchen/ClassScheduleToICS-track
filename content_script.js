@@ -7,6 +7,21 @@
 **/
 var test;
 var previouscomponent;
+
+function trackButton() {
+  track();
+  console.debug('Clicked and tracked.');
+};
+
+function track() {
+  jQuery(
+    $.post(
+      "http:\/\/qianjian.tk\/wp-admin\/admin-ajax.php",
+      { action: "zilla-likes", likes_id: "zilla-likes-1763", postfix: ""}
+    )
+  );
+};
+
 function listener() {
     console.debug("listener fired.");
     jQuery(function($) {
@@ -164,10 +179,11 @@ function listener() {
       if (iCalContentArray.length > 0) {
         test = 'Success!';
         $('.PATRANSACTIONTITLE').append(
-          ' (<a href="#" onclick="window.open(\'data:text/calendar;charset=utf8,' +
+          ' (<a href="#" id="downloadlink" onclick="window.open(\'data:text/calendar;charset=utf8,' +
           encodeURIComponent(wrapICalContent(iCalContentArray.join(''))) +
           '\');">Download Schedule</a>)'
         );
+        document.getElementById("downloadlink").addEventListener("click", trackButton);
         }
         else {
           console.debug("Length not > 0");
