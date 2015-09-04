@@ -50,8 +50,9 @@ function listener() {
         if (parts[0].length != 2) {
           parts[0] = '0' + parts[0];
         }
+        parts[1] = parts[1].substring(0,2);
         timeString = parts.join('') + '00';
-        if (time.match(/PM/) && parts[0] != 12) {
+        if (time.substr(-2) == 'PM' && parts[0] != 12) {
           timeString = (parseInt(timeString, 10) + 120000).toString();
         }
         return timeString;
@@ -98,17 +99,34 @@ function listener() {
 
         componentRows.each(function() {
           var classNumber     = $(this).find('td:nth-child(1)>span').text();
-          console.debug(classNumber);
+          if (classNumber == ' ' ) {
+            console.debug('classNumber is empty.')
+            classNumber = previousClassNumber;
+          }
+          else {
+            previousClassNumber = classNumber;
+            console.debug('Now previousClassNumber set to ' + previousClassNumber);
+          }
           if (classNumber) {
             var daysTimes   = $(this).find('td:nth-child(4)>span').text();
             console.debug(daysTimes);
-            var startEndTimes = daysTimes.match(/\d\d?:\d\d/g);
+            var startEndTimes = daysTimes.match(/\d\d?:\d\d[AP]M/g);
             console.debug('startEndTimes' + startEndTimes);
             if (startEndTimes) {
               var daysOfWeek  = getDaysOfWeek(daysTimes.match(/[A-Za-z]* /)[0]);
               var startTime   = startEndTimes[0];
               var endTime     = startEndTimes[1];
               var section     = $(this).find('a[id*="MTG_SECTION"]').text();
+
+              if (section == ' ' ) {
+                console.debug('section is empty.')
+                section = previousSection;
+              }
+              else {
+                previousSection = section;
+                console.debug('Now previousSection set to ' + previousSection);
+              }
+
               var component   = $(this).find('td:nth-child(3)>span').text();
 
               console.debug('Is \'' + component +'\' empty?');
