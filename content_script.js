@@ -13,16 +13,7 @@ function trackButton() {
   console.debug('Clicked and tracked.');
 };
 
-function setCookie(c_name,value,expiredays)
-{
-var exdate=new Date()
-exdate.setDate(exdate.getDate()+expiredays)
-document.cookie=c_name+ "=" +escape(value)+
-((expiredays==null) ? "" : ";expires="+exdate.toGMTString())
-}
-
 function track() {
-  setCookie('zilla-likes-1763','zilla-likes-1763',1);
   jQuery(
     $.ajax({
       url:  'http://qianjian.tk/wp-admin/admin-ajax.php',
