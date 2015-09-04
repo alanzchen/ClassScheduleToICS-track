@@ -30,7 +30,7 @@ function listener() {
     console.debug("listener fired.");
     jQuery(function($) {
       // Timezone for tool.
-      var timezone = 'Asia/Beijing';
+      var timezone = 'Asia/Hong_Kong';
 
       // Date object -> '19920517'
       function getDateString(date) {
@@ -66,11 +66,11 @@ function listener() {
       function getDaysOfWeek(s) {
         var days = []
         if (s.match(/S[^a]/)) days.push('SU');
-        if (s.match(/M/))     days.push('MO');
+        if (s.match(/Mo/))     days.push('MO');
         if (s.match(/T[^h]/)) days.push('TU');
-        if (s.match(/W/))     days.push('WE');
+        if (s.match(/We/))     days.push('WE');
         if (s.match(/Th/))    days.push('TH');
-        if (s.match(/F/))     days.push('FR');
+        if (s.match(/Fr/))     days.push('FR');
         if (s.match(/S[^u]/)) days.push('SA');
 
         return days.join(',')
@@ -128,31 +128,34 @@ function listener() {
               // Start the event one day before the actual start date, then exclude it in an exception
               // date rule. This ensures an event does not occur on startDate if startDate is not on
               // part of daysOfWeek.
-              var startDate = new Date(startEndDate.substring(0, 10));
-              startDate.setDate(startDate.getDate() - 1);
               var startDateString = startEndDate.substring(0, 10);
+              var startDateArray = startDateString.split('/');
+              var startDate = new Date(startDateArray[2], startDateArray[1] - 1, startDateArray[0]);
+              console.debug('startDate: ' + startDate.getFullYear());
+              startDate.setDate(startDate.getDate() - 1);
               startDateString = startDateString.replace(/\//g,"");
               // End the event one day after the actual end date. Technically, the RRULE UNTIL field
               // should be the start time of the last occurence of an event. However, since the field
               // does not accept a timezone (only UTC time) and Toronto is always behind UTC, we can
               // just set the end date one day after and be guarenteed that no other occurence of
               // this event.
-              var endDate = new Date(startEndDate.substring(14, 24));
-              endDate.setDate(endDate.getDate() + 1);
               var endDateString = startEndDate.substring(13, 24);
+              var endDateArray = endDateString.split('/');
+              var endDate = new Date(endDateArray[2], endDateArray[1] - 1, endDateArray[0]);
+              endDate.setDate(endDate.getDate() + 1);
               endDateString = endDateString.replace(/\//g,"");
               console.debug('Composing iCalContent');
               var iCalContent =
                 'BEGIN:VEVENT\n' +
-                //'DTSTART;TZID=' + timezone + ':' + getDateTimeString(startDate, startTime) + '\n' +
-                'DTSTART;TZID=' + timezone + ':' + startDateString + 'T' + getTimeString(startTime) + '\n' +
-                //'DTEND;TZID=' + timezone + ':' + getDateTimeString(startDate, endTime) + '\n' +
-                'DTEND;TZID=' + timezone + ':' + startDateString + 'T' + getTimeString(endTime) + '\n' +
+                'DTSTART;TZID=' + timezone + ':' + getDateTimeString(startDate, startTime) + '\n' +
+                //'DTSTART;TZID=' + timezone + ':' + startDateString + 'T' + getTimeString(startTime) + '\n' +
+                'DTEND;TZID=' + timezone + ':' + getDateTimeString(startDate, endTime) + '\n' +
+                //'DTEND;TZID=' + timezone + ':' + startDateString + 'T' + getTimeString(endTime) + '\n' +
                 'LOCATION:' + room + '\n' +
-                //'RRULE:FREQ=WEEKLY;UNTIL=' + getDateTimeString(endDate, endTime) + 'Z;BYDAY=' + daysOfWeek + '\n' +
-                'RRULE:FREQ=WEEKLY;UNTIL=' + endDateString + 'T' + getTimeString(endTime) + 'Z;BYDAY=' + daysOfWeek + '\n' +
-                //'EXDATE;TZID=' + timezone + ':' + getDateTimeString(startDate, startTime) + '\n' +
-                'EXDATE;TZID=' + timezone + ':' + startDateString + 'T' + getTimeString(startTime) + '\n' +
+                'RRULE:FREQ=WEEKLY;UNTIL=' + getDateTimeString(endDate, endTime) + 'Z;BYDAY=' + daysOfWeek + '\n' +
+                //'RRULE:FREQ=WEEKLY;UNTIL=' + endDateString + 'T' + getTimeString(endTime) + 'Z;BYDAY=' + daysOfWeek + '\n' +
+                'EXDATE;TZID=' + timezone + ':' + getDateTimeString(startDate, startTime) + '\n' +
+                //'EXDATE;TZID=' + timezone + ':' + startDateString + 'T' + getTimeString(startTime) + '\n' +
                 'SUMMARY:'  + courseCode + '(' + component + ')\n' +
                 'DESCRIPTION:' +
                   'Course Name: '    + courseName + '\\n' +
