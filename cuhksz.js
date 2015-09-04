@@ -5,7 +5,7 @@
   *
   * Get ICS files for university class schedules in Oracle PeopleSoft systems (including CUHKSZ)
 **/
-var test = 'Not Yet!';
+var test;
 var previouscomponent;
 var previousClassNumber;
 var previousSection;
@@ -173,7 +173,7 @@ function listener() {
               iCalContentArray.push(iCalContent);
 
               $(this).find('span[id*="MTG_DATES"]').append(
-                '<br><a href="#" class="downloadlink" onclick="window.open(\'data:text/calendar;charset=utf8,' +
+                '<br><a href="#" onclick="window.open(\'data:text/calendar;charset=utf8,' +
                 encodeURIComponent(wrapICalContent(iCalContent)) +
                 '\');">Download Class</a>'
               );
@@ -184,6 +184,7 @@ function listener() {
 
       if (iCalContentArray.length > 0) {
         test = 'Success!';
+
         chrome.runtime.sendMessage({
           from:    'content',
           subject: "showPageAction",
@@ -192,21 +193,19 @@ function listener() {
         }
         else {
           console.debug("Length not > 0");
-          test = 'Not Yet!';
         }
     });
 }
 
 var timeout = null;
 document.addEventListener("DOMSubtreeModified", function() {
-    var numdownloadlink = $('.downloadlink').length;
     if(timeout) {
         clearTimeout(timeout);
     }
     if( test == 'Success!' ){
       console.debug("Success?");
     }
-    else if (numdownloadlink == 0) {
+    else {
       timeout = setTimeout(listener, 2000);
     }
 }, false);
