@@ -78,7 +78,7 @@ function listener() {
       function wrapICalContent(iCalContent) {
         return 'BEGIN:VCALENDAR\n' +
           'VERSION:2.0\n' +
-          'PRODID:-//Keanu Lee/Class Schedule to ICS//EN\n' +
+          'PRODID:-//Alan Chen/Class Schedule to ICS//EN\n' +
           iCalContent +
           'END:VCALENDAR\n';
       }
