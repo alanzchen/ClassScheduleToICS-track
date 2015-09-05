@@ -16,17 +16,6 @@ function listener() {
       // Timezone for tool.
       var timezone = 'Asia/Beijing';
 
-      // Date object -> '19920517'
-      function getDateString(date) {
-        var m = date.getMonth() + 1;
-        if (m < 10) m = '0' + m;
-
-        var d = date.getDate();
-        if (d < 10) d = '0' + d;
-
-        return '' + date.getFullYear() + m + d;
-      }
-
       var iCalContentArray = [];
       $('.PSGROUPBOXWBO').each(function() {
         var eventTitle = $(this).find('.PAGROUPDIVIDER').text().split('-');

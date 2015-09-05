@@ -1,3 +1,14 @@
+// Date object -> '19920517'
+function getDateString(date) {
+    var m = date.getMonth() + 1;
+    if (m < 10) m = '0' + m;
+
+    var d = date.getDate();
+    if (d < 10) d = '0' + d;
+
+    return '' + date.getFullYear() + m + d;
+}
+
 // '4:30PM' -> '163000'
 function getTimeString(time) {
     var timeString = time;
