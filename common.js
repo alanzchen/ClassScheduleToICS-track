@@ -32,8 +32,9 @@ function getTimeString(time) {
     if (parts[0].length != 2) {
         parts[0] = '0' + parts[0];
     }
+    parts[1] = parts[1].substring(0, 2);
     timeString = parts.join('') + '00';
-    if (time.match(/PM/) && parts[0] != 12) {
+    if (time.substr(-2) == 'PM' && parts[0] != 12) {
         timeString = (parseInt(timeString, 10) + 120000).toString();
     }
     return timeString;
@@ -119,7 +120,7 @@ function listener() {
                 if (data['classNumber']) {
                     var daysTimes = $(this).find(selectors['daysTimes']).text();
                     console.debug(daysTimes);
-                    data['startEndTimes'] = daysTimes.match(/\d\d?:\d\d/g);
+                    data['startEndTimes'] = daysTimes.match(/\d\d?:\d\d[AP]M/g);
                     console.debug('startEndTimes' + data['startEndTimes']);
                     if (data['startEndTimes']) {
                         data['daysOfWeek'] = getDaysOfWeek(daysTimes.match(/[A-Za-z]* /)[0]);
@@ -162,22 +163,21 @@ function listener() {
                     } // end if (startEndTimes)
                 } // end if (classNumber)
                 console.debug(data);
+            }); // end componentRows.each
+        }); // end $(".PSGROUPBOXWBO").each
 
+        if (iCalContentArray.length > 0) {
+            test = 'Success!';
 
-                if (iCalContentArray.length > 0) {
-                    test = 'Success!';
-
-                    chrome.runtime.sendMessage({
-                        from: 'content',
-                        subject: "showPageAction",
-                        link: 'data:text/calendar;charset=utf8,' + encodeURIComponent(wrapICalContent(iCalContentArray.join('')))
-                    });
-                } else {
-                    console.debug("Length not > 0");
-                }
+            chrome.runtime.sendMessage({
+                from: 'content',
+                subject: "showPageAction",
+                link: 'data:text/calendar;charset=utf8,' + encodeURIComponent(wrapICalContent(iCalContentArray.join('')))
             });
-        }); // end componentRows.each
-    }); // end $(".PSGROUPBOXWBO").each
+        } else {
+            console.debug("Length not > 0");
+        }
+    });
 }
 
 
