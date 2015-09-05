@@ -67,7 +67,7 @@ function wrapICalContent(iCalContent) {
         'END:VCALENDAR\n';
 }
 
-function fillempty() {
+function fillempty(data) {
     console.debug('Is \'' + data['component'] + '\' empty?');
     if (data['component'] == ' ') {
         console.debug('Yes it is empty.')
@@ -151,9 +151,9 @@ function listener() {
 
 
                         // Fix empty things
-                        fillempty();
+                        fillempty(data);
 
-                        var iCalContent = composeical();
+                        var iCalContent = composeical(data);
                         iCalContentArray.push(iCalContent);
                         $(this).find(selectors['startEndDate']).append(
                             '<br><a href="#" class="downloadlink" onclick="window.open(\'data:text/calendar;charset=utf8,' +
