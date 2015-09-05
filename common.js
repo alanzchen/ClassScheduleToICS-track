@@ -9,7 +9,6 @@
  **/
 
 var test;
-var data = [];
 var previouscomponent;
 var previousClassNumber;
 var previousSection;
@@ -101,6 +100,7 @@ function listener() {
     console.debug("listener fired.");
     jQuery(function($) {
         var iCalContentArray = [];
+        var data = [];
 
         $('.PSGROUPBOXWBO').each(function() {
             var eventTitle = $(this).find('.PAGROUPDIVIDER').text().split('-');
