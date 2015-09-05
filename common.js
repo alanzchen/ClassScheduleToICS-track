@@ -9,6 +9,7 @@
  **/
 
 var test;
+var data = [];
 var previouscomponent;
 var previousClassNumber;
 var previousSection;
@@ -66,123 +67,129 @@ function wrapICalContent(iCalContent) {
         'END:VCALENDAR\n';
 }
 
+function fillempty() {
+    console.debug('Is \'' + data['component'] + '\' empty?');
+    if (data['component'] == ' ') {
+        console.debug('Yes it is empty.')
+        data['component'] = previouscomponent;
+    } else {
+        previouscomponent = data['component'];
+        console.debug('Now previouscomponent set to ' + previouscomponent);
+    }
+    console.debug('Now component is ' + data['component'] + '.');
+    console.debug(data['classNumber'] + 'has a length of ' + data['classNumber'].length);
+    if (data['classNumber'].length == 1) {
+        console.debug('Yes classNumber is empty.')
+        data['classNumber'] = previousClassNumber;
+    } else {
+        previousClassNumber = data['classNumber'];
+        console.debug('Now previousClassNumber set to ' + previousClassNumber);
+    }
+    console.debug(data['section'] + 'has a length of ' + data['section'].length);
+    if (data['section'].length == 0) {
+        console.debug('Yes section' + data['section'] + ' is empty.')
+        data['section'] = previousSection;
+    } else {
+        previousSection = data['section'];
+        console.debug('Now previousSection set to ' + previousSection);
+    }
+}
+
+
 function listener() {
     console.debug("listener fired.");
     jQuery(function($) {
+        var iCalContentArray = [];
 
-      var iCalContentArray = [];
-      $('.PSGROUPBOXWBO').each(function() {
-        var eventTitle = $(this).find('.PAGROUPDIVIDER').text().split('-');
-        var courseCode = eventTitle[0];
-        var courseName = eventTitle[1];
-        var componentRows = $(this).find(selectors['componentRows']).find('tr');
-        console.debug(eventTitle);
-        console.debug(courseName);
-        console.debug(courseCode);
-        console.debug(componentRows);
+        $('.PSGROUPBOXWBO').each(function() {
+            var eventTitle = $(this).find('.PAGROUPDIVIDER').text().split('-');
+            data['courseCode'] = eventTitle[0];
+            data['courseName'] = eventTitle[1];
+            componentRows = $(this).find(selectors['componentRows']).find('tr');
+            console.debug(eventTitle);
+            console.debug(data['courseName']);
+            console.debug(data['courseCode']);
+            console.debug(componentRows);
 
-        componentRows.each(function() {
-          var classNumber = $(this).find(selectors['classNumber']).text();
-          console.debug(classNumber);
-          if (classNumber) {
-            var daysTimes     = $(this).find(selectors['daysTimes']).text();
-            console.debug(daysTimes);
-            var startEndTimes = daysTimes.match(/\d\d?:\d\d/g);
-            console.debug('startEndTimes' + startEndTimes);
-            if (startEndTimes) {
-              var daysOfWeek  = getDaysOfWeek(daysTimes.match(/[A-Za-z]* /)[0]);
-              var startTime   = startEndTimes[0];
-              var endTime     = startEndTimes[1];
-              var section       = $(this).find(selectors['section']).text();
-              var component     = $(this).find(selectors['component']).text();
-              console.debug('Is \'' + component +'\' empty?');
-              if (component == ' ' ) {
-                console.debug('Yes it is empty.')
-                component = previouscomponent;
-              }
-              else {
-                previouscomponent = component;
-                console.debug('Now previouscomponent set to ' + previouscomponent);
-              }
-              console.debug('Now component is ' + component + '.');
-              console.debug(classNumber + 'has a length of ' + classNumber.length);
-              if (classNumber.length == 1) {
-                console.debug('Yes classNumber is empty.')
-                classNumber = previousClassNumber;
-              }
-              else {
-                previousClassNumber = classNumber;
-                console.debug('Now previousClassNumber set to ' + previousClassNumber);
-              }
-              console.debug(section + 'has a length of ' + section.length);
-              if (section.length == 0 ) {
-                console.debug('Yes section' + section + ' is empty.')
-                section = previousSection;
-              }
-              else {
-                previousSection = section;
-                console.debug('Now previousSection set to ' + previousSection);
-              }
-              var room          = $(this).find(selectors['room']).text();
-              var instructor    = $(this).find(selectors['instructor']).text();
-              var startEndDate  = $(this).find(selectors['startEndDate']).text();
-              console.debug('startEndDate' + startEndDate);
-              // Start the event one day before the actual start date, then exclude it in an exception
-              // date rule. This ensures an event does not occur on startDate if startDate is not on
-              // part of daysOfWeek.
-              var startDate = new Date(startEndDate.substring(0, 10));
-              startDate.setDate(startDate.getDate() - 1);
-              var startDateString = startEndDate.substring(0, 10);
-              startDateString = startDateString.replace(/\//g,"");
-              // End the event one day after the actual end date. Technically, the RRULE UNTIL field
-              // should be the start time of the last occurence of an event. However, since the field
-              // does not accept a timezone (only UTC time) and Toronto is always behind UTC, we can
-              // just set the end date one day after and be guarenteed that no other occurence of
-              // this event.
-              var endDate = new Date(startEndDate.substring(14, 24));
-              endDate.setDate(endDate.getDate() + 1);
-              var endDateString = startEndDate.substring(13, 24);
-              endDateString = endDateString.replace(/\//g,"");
-              var iCalContent = composeical(startDate, startTime, startDateString, endDate, endTime, endDateString,
-                courseCode, courseName, component, section, instructor, classNumber, daysTimes, startEndDate, room, daysOfWeek);
-              iCalContentArray.push(iCalContent);
+            componentRows.each(function() {
 
-              $(this).find(selectors['startEndDate']).append(
-                '<br><a href="#" class="downloadlink" onclick="window.open(\'data:text/calendar;charset=utf8,' +
-                encodeURIComponent(wrapICalContent(iCalContent)) +
-                '\');">Download Class</a>'
-              );
-            } // end if (startEndTimes)
-          } // end if (classNumber)
+                // Collect Data
+                data['classNumber'] = $(this).find(selectors['classNumber']).text();
+                console.debug(!data['classNumber']);
+                if (data['classNumber']) {
+                    var daysTimes = $(this).find(selectors['daysTimes']).text();
+                    console.debug(daysTimes);
+                    data['startEndTimes'] = daysTimes.match(/\d\d?:\d\d/g);
+                    console.debug('startEndTimes' + data['startEndTimes']);
+                    if (data['startEndTimes']) {
+                        data['daysOfWeek'] = getDaysOfWeek(daysTimes.match(/[A-Za-z]* /)[0]);
+                        data['startTime'] = data['startEndTimes'][0];
+                        data['endTime'] = data['startEndTimes'][1];
+                        data['section'] = $(this).find(selectors['section']).text();
+                        data['component'] = $(this).find(selectors['component']).text();
+                        data['room'] = $(this).find(selectors['room']).text();
+                        data['instructor'] = $(this).find(selectors['instructor']).text();
+                        data['startEndDate'] = $(this).find(selectors['startEndDate']).text();
+                        console.debug('startEndDate' + data['startEndDate']);
+                        // Start the event one day before the actual start date, then exclude it in an exception
+                        // date rule. This ensures an event does not occur on startDate if startDate is not on
+                        // part of daysOfWeek.
+                        data['startDateString'] = data['startEndDate'].substring(0, 10);
+                        data['startDate'] = datebuilder(data['startDateString']);
+                        data['startDate'].setDate(data['startDate'].getDate() - 1);
+                        data['startDateString'] = data['startDateString'].replace(/\//g, "");
+                        // End the event one day after the actual end date. Technically, the RRULE UNTIL field
+                        // should be the start time of the last occurence of an event. However, since the field
+                        // does not accept a timezone (only UTC time) and Toronto is always behind UTC, we can
+                        // just set the end date one day after and be guarenteed that no other occurence of
+                        // this event.
+                        data['endDate'] = new datebuilder(data['startEndDate'].substring(14, 24));
+                        data['endDate'].setDate(data['endDate'].getDate() + 1);
+                        data['endDateString'] = data['startEndDate'].substring(13, 24);
+                        data['endDateString'] = data['endDateString'].replace(/\//g, "");
+
+
+                        // Fix empty things
+                        fillempty();
+
+                        var iCalContent = composeical();
+                        iCalContentArray.push(iCalContent);
+                        $(this).find(selectors['startEndDate']).append(
+                            '<br><a href="#" class="downloadlink" onclick="window.open(\'data:text/calendar;charset=utf8,' +
+                            encodeURIComponent(wrapICalContent(iCalContent)) +
+                            '\');">Download Class</a>'
+                        );
+                    } // end if (startEndTimes)
+                } // end if (classNumber)
+                console.debug(data);
+
+
+                if (iCalContentArray.length > 0) {
+                    test = 'Success!';
+
+                    chrome.runtime.sendMessage({
+                        from: 'content',
+                        subject: "showPageAction",
+                        link: 'data:text/calendar;charset=utf8,' + encodeURIComponent(wrapICalContent(iCalContentArray.join('')))
+                    });
+                } else {
+                    console.debug("Length not > 0");
+                }
+            });
         }); // end componentRows.each
-      }); // end $(".PSGROUPBOXWBO").each
-
-      if (iCalContentArray.length > 0) {
-        test = 'Success!';
-
-        chrome.runtime.sendMessage({
-          from:    'content',
-          subject: "showPageAction",
-          link:    'data:text/calendar;charset=utf8,' + encodeURIComponent(wrapICalContent(iCalContentArray.join('')))
-        });
-        }
-        else {
-          console.debug("Length not > 0");
-        }
-    });
+    }); // end $(".PSGROUPBOXWBO").each
 }
 
 
 
 var timeout = null;
 document.addEventListener("DOMSubtreeModified", function() {
-    if(timeout) {
+    if (timeout) {
         clearTimeout(timeout);
     }
-    if( test == 'Success!' ){
-      console.debug("Success?");
-    }
-    else if($(".downloadlink").length == 0){
-      timeout = setTimeout(listener, 2000);
+    if (test == 'Success!') {
+        console.debug("Success?");
+    } else if ($(".downloadlink").length == 0) {
+        timeout = setTimeout(listener, 2000);
     }
 }, false);
