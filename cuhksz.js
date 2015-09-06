@@ -31,7 +31,7 @@ function composeical(data) {
 }
 
 function datebuilder(dateString) {
-    return new date(dateString);
+    return new Date(dateString);
 }
 
 var selectors = {
