@@ -1,5 +1,5 @@
 function composeical(data) {
-    var timezone = 'Asia/Beijing';
+    var timezone = 'Asia/Hong_Kong';
     console.debug('Composing iCalContent');
     var iCalContent =
         'BEGIN:VEVENT\n' +
