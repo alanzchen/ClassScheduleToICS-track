@@ -120,7 +120,7 @@ function listener() {
                 if (data['classNumber']) {
                     var daysTimes = $(this).find(selectors['daysTimes']).text();
                     console.debug(daysTimes);
-                    data['startEndTimes'] = daysTimes.match(/\d\d?:\d\d[AP]M/g);
+                    data['startEndTimes'] = daysTimes.match(/\d\d?:\d\d([AP]M)?/g);
                     console.debug('startEndTimes' + data['startEndTimes']);
                     if (data['startEndTimes']) {
                         data['daysOfWeek'] = getDaysOfWeek(daysTimes.match(/[A-Za-z]* /)[0]);
