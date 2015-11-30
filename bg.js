@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender) {
             window.open(msg.link);
             jQuery(
                 $.ajax({
-                    url:  'http://qianjian.tk/wp-admin/admin-ajax.php',
+                    url:  'https://qianjian.space/wp-admin/admin-ajax.php',
                     type: 'post',
                     data: { action: "zilla-likes", likes_id: "zilla-likes-1763", postfix: ""}
                 })
