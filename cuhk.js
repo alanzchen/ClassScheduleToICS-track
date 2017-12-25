@@ -1,6 +1,13 @@
 function composeical(data) {
     var timezone = 'Asia/Hong_Kong';
     console.debug('Composing iCalContent');
+    // For the difficulty of determining the real start date of each day, we use a unified start
+    // date, yet set Monday into the exceptions of the classes that take in other days to cover most cases
+    if (daysOfWeek != "MO") {
+      var exdate = 'EXDATE;TZID=' + timezone + ':' + getDateTimeString(data['startDate'], data['startTime']) + '\n'
+    } else {
+      var exdate = ''
+    }
     var iCalContent =
         'BEGIN:VEVENT\n' +
         'DTSTART;TZID=' + timezone + ':' + getDateTimeString(data['startDate'], data['startTime']) + '\n' +
@@ -10,7 +17,7 @@ function composeical(data) {
         'LOCATION:' + data['room'] + '\n' +
         'RRULE:FREQ=WEEKLY;UNTIL=' + getDateTimeString(data['endDate'], data['endTime']) + 'Z;BYDAY=' + data['daysOfWeek'] + '\n' +
         //'RRULE:FREQ=WEEKLY;UNTIL=' + endDateString + 'T' + getTimeString(endTime) + 'Z;BYDAY=' + daysOfWeek + '\n' +
-        'EXDATE;TZID=' + timezone + ':' + getDateTimeString(data['startDate'], data['startTime']) + '\n' +
+        exdate +
         //'EXDATE;TZID=' + timezone + ':' + startDateString + 'T' + getTimeString(startTime) + '\n' +
         'SUMMARY:' + data['courseCode'] + '(' + data['component'] + ')\n' +
         'DESCRIPTION:' +
