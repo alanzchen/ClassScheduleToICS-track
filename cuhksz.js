@@ -3,8 +3,8 @@ function composeical(data) {
     console.debug('Composing iCalContent');
     // For the difficulty of determining the real start date of each day, we use a unified start
     // date, yet set Monday into the exceptions of the classes that take in other days to cover most cases
-    if (daysOfWeek != 'MO') {
-      var exdate = 'EXDATE;TZID=' + timezone + ':' + startDateString + 'T' + getTimeString(startTime) + '\n'
+    if (data['daysOfWeek'] != 'MO') {
+      var exdate = 'EXDATE;TZID=' + timezone + ':' + data['startDateString'] + 'T' + getTimeString(data['startTime']) + '\n'
     } else {
       var exdate = ''
     }
