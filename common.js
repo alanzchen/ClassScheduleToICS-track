@@ -54,6 +54,14 @@ function getDaysOfWeek(s) {
     if (s.match(/Th/)) days.push('TH');
     if (s.match(/F/)) days.push('FR');
     if (s.match(/S[^u]/)) days.push('SA');
+    // Chinese
+    if (s.match(/日/)) days.push('SU');
+    if (s.match(/一/)) days.push('MO');
+    if (s.match(/二/)) days.push('TU');
+    if (s.match(/三/)) days.push('WE');
+    if (s.match(/四/)) days.push('TH');
+    if (s.match(/五/)) days.push('FR');
+    if (s.match(/六/)) days.push('SA');
 
     return days.join(',')
 }
@@ -119,11 +127,11 @@ function listener() {
                 console.debug(!data['classNumber']);
                 if (data['classNumber']) {
                     var daysTimes = $(this).find(selectors['daysTimes']).text();
-                    console.debug(daysTimes);
+                    //console.debug(daysTimes);
                     data['startEndTimes'] = daysTimes.match(/\d\d?:\d\d([AP]M)?/g);
                     console.debug('startEndTimes' + data['startEndTimes']);
                     if (data['startEndTimes']) {
-                        data['daysOfWeek'] = getDaysOfWeek(daysTimes.match(/[A-Za-z]* /)[0]);
+                        data['daysOfWeek'] = getDaysOfWeek(daysTimes.match(/[A-Za-z]*[^\x00-\xff]* /)[0]);
                         data['startTime'] = data['startEndTimes'][0];
                         data['endTime'] = data['startEndTimes'][1];
                         data['section'] = $(this).find(selectors['section']).text();
