@@ -7,18 +7,18 @@
   "permissions":        ["http://qianjian.space/*", "https://qianjian.space/*"],
   "content_scripts":    [
     {
-      "matches":          ["http://116.31.95.3/*", "http://116.31.95.2/*", "http://58.250.174.66/*"],
+      "matches":          ["http://116.31.95.3/*", "http://116.31.95.2/*", "http://58.250.174.66/*", "http://course.computercomity.com/*"],
       "all_frames":       true,
-      "js":               ["jquery-1.9.1.min.js", "cuhksz.js", "common.js"]
+      "js":               ["jquery-3.2.1.min.js", "cuhksz.js", "common.js"]
     },
     {
       "matches":          ["https://cusis.cuhk.edu.hk/*"],
       "all_frames":       true,
-      "js":               ["jquery-1.9.1.min.js", "cuhk.js", "common.js"]
+      "js":               ["jquery-3.2.1.min.js", "cuhk.js", "common.js"]
     }
   ],
   "background":{
-    "scripts":["jquery-1.9.1.min.js", "bg.js"],
+    "scripts":["jquery-3.2.1.min.js", "bg.js"],
     "persistent": false
   },
   "page_action": {
