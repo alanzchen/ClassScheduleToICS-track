@@ -4,7 +4,7 @@
   "version":            "1.3.3",
   "description":        "Export your CUHK(SZ) & CUHK class schedule to your calendar",
   "icons": { "128": "icon.png" },
-  "permissions":        ["http://qianjian.space/*", "https://qianjian.space/*", "downloads"],
+  "permissions":        ["http://qianjian.space/*", "https://qianjian.space/*"],
   "content_scripts":    [
     {
       "matches":          ["http://116.31.95.3/*", "http://116.31.95.2/*", "http://58.250.174.66/*", "https://portal.cuhk.edu.hk/*", "http://course.computercomity.com/*"],
@@ -18,7 +18,8 @@
     }
   ],
   "background":{
-    "scripts":["jquery-3.2.1.min.js", "bg.js"]
+    "scripts":["jquery-3.2.1.min.js", "bg.js"],
+    "persistent": false
   },
   "page_action": {
     "default_icon": "icon.png",
