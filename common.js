@@ -177,18 +177,10 @@ function listener() {
         if (iCalContentArray.length > 0) {
             test = 'Success!';
 
-            // Can't just download by data url, wrap into a blob instead
-            // where we do not need to encode data to URI
-            iCalContent = wrapICalContent(iCalContentArray.join(''));
-            iCalBlob = new Blob(
-              [iCalContent],
-              {type: 'data:text/calendar;charset=utf8'}
-            );
-
-            browser.runtime.sendMessage({
+            chrome.runtime.sendMessage({
                 from: 'content',
                 subject: "showPageAction",
-                blob: iCalBlob
+                link: 'data:text/calendar;charset=utf8,' + encodeURIComponent(wrapICalContent(iCalContentArray.join('')))
             });
         } else {
             console.debug("Length not > 0");
