@@ -189,9 +189,8 @@ function listener() {
 }
 
 
-
 var timeout = null;
-document.addEventListener("DOMSubtreeModified", function() {
+function launch() {
     if (timeout) {
         clearTimeout(timeout);
     }
@@ -200,4 +199,11 @@ document.addEventListener("DOMSubtreeModified", function() {
     } else if ($(".downloadlink").length == 0) {
         timeout = setTimeout(listener, 2000);
     }
-}, false);
+}
+launch();
+
+var observer = new MutationObserver(launch);
+observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true
+});
